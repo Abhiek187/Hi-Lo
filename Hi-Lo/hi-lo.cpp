@@ -27,6 +27,22 @@ void guessAnswer(int answer)
 		std::cout << "Guess #" << attempt << ": ";
 		int guess;
 		std::cin >> guess;
+		std::cin.ignore(32767, '\n');
+
+		// Error checking
+		while (std::cin.fail() || guess < 1 || guess > 100)
+		{
+			if (std::cin.fail()) // User didn't enter a number
+			{
+				std::cin.clear();
+				std::cin.ignore(32767, '\n');
+				std::cerr << "That is not a number. Enter again: ";
+			} else // User entered number out of range
+				std::cerr << "Please enter a number between 1 and 100: ";
+
+			std::cin >> guess;
+			std::cin.ignore(32767, '\n');
+		}
 
 		if (guess < answer)
 			std::cout << "Your guess is too low.\n";
@@ -45,6 +61,7 @@ void guessAnswer(int answer)
 int main()
 {
 	srand(static_cast<unsigned int>(time(0))); // set initial seed value to system clock
+	rand(); // fixes RNG
 	char playAgain = 'y'; // Yes, we want to play the game.
 
 	do
@@ -53,16 +70,25 @@ int main()
 		std::cout << "Let's play a game. I'm thinking of a number. You have 7 tries to guess what it is.\n";
 		guessAnswer(answer);
 
-		while (true) // only answers of y or n will break out of this loop
-		{
-			std::cout << "Would you like to play again (y/n)? ";
-			std::cin >> playAgain;
+		std::cout << "Would you like to play again (y/n)? ";
+		std::cin >> playAgain;
+		std::cin.ignore(32767, '\n');
 
-			if (playAgain == 'y' || playAgain == 'n')
-				break;
+		while (std::cin.fail() || (playAgain != 'y' && playAgain != 'Y' && playAgain != 'n' && playAgain != 'N'))
+		{
+			if (std::cin.fail()) // hasn't happened yet
+			{
+				std::cin.clear();
+				std::cin.ignore(32767, '\n');
+				std::cerr << "That is not a character. Enter again: ";
+			} else
+				std::cerr << "Please enter \"y\" or \"n\": ";
+
+			std::cin >> playAgain;
+			std::cin.ignore(32767, '\n');
 		}
 	}
-	while (playAgain == 'y');
+	while (playAgain == 'y' || playAgain == 'Y');
 
 	std::cout << "Thank you for playing.\n";
 	return 0;
